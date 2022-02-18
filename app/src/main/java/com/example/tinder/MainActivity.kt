@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
         } else {
             startActivity(Intent(this, LikeActviity::class.java))
+            finish()
         }
     }
 }

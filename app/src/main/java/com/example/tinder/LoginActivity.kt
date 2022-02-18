@@ -7,6 +7,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import com.example.tinder.DBKey.Companion.USERS
+import com.example.tinder.DBKey.Companion.USER_ID
 import com.facebook.CallbackManager
 import com.facebook.FacebookActivity
 import com.facebook.FacebookCallback
@@ -52,7 +54,7 @@ class LoginActivity: AppCompatActivity() {
                     if(task.isSuccessful) {
                         handleSuccessLogin()
                     } else {
-                        Toast.makeText(this, "로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, R.string.check_email_password, Toast.LENGTH_SHORT).show()
                     }
                 }
         }
@@ -67,9 +69,9 @@ class LoginActivity: AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if(task.isSuccessful) {
-                        Toast.makeText(this, "회원가입에 성공했습니다. 로그인 버튼을 눌러 로그인 해주세요.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, R.string.success_sign_up, Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this, "이미 가입한 이메일이거나, 회원가입에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, R.string.fail_sign_up, Toast.LENGTH_SHORT).show()
                     }
                 }
         }
@@ -108,7 +110,7 @@ class LoginActivity: AppCompatActivity() {
                         if (task.isSuccessful) {
                             handleSuccessLogin()
                         } else {
-                            Toast.makeText(this@LoginActivity, "페이스북 로그인이 실패했습니다.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity, R.string.fail_facebook_login, Toast.LENGTH_SHORT).show()
                         }
                     }
             }
@@ -116,7 +118,7 @@ class LoginActivity: AppCompatActivity() {
             override fun onCancel() {}
 
             override fun onError(error: FacebookException?) {
-                Toast.makeText(this@LoginActivity, "페이스북 로그인이 실패했습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, R.string.fail_facebook_login, Toast.LENGTH_SHORT).show()
             }
 
         })
@@ -139,14 +141,14 @@ class LoginActivity: AppCompatActivity() {
 
     private fun handleSuccessLogin() {
         if(auth.currentUser == null) {
-            Toast.makeText(this, "로그인에 실패했습니다", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.fail_login, Toast.LENGTH_SHORT).show()
             return
         }
 
         val userId = auth.currentUser?.uid.orEmpty()
-        val currentUserDB = Firebase.database.reference.child("Users").child(userId)
+        val currentUserDB = Firebase.database.reference.child(USERS).child(userId)
         val user = mutableMapOf<String, Any>()
-        user["userId"] = userId
+        user[USER_ID] = userId
         currentUserDB.updateChildren(user)
 
         finish()

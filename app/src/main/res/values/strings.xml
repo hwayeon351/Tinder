@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">Tinder</string>
     <string name="facebook_app_id">1433722893753527</string> <string name="fb_login_protocol_scheme">fb1433722893753527</string>
-
+    <string name="write_name">이름을 입력해주세요.</string>
+    <string name="save">저장</string>
+    <string name="not_login">로그인이 되어 있지 않습니다.</string>
+    <string name="fail_login">로그인에 실패했습니다</string>
+    <string name="fail_facebook_login">페이스북 로그인이 실패했습니다.</string>
+    <string name="success_sign_up">회원가입에 성공했습니다. 로그인 버튼을 눌러 로그인 해주세요.</string>
+    <string name="fail_sign_up">이미 가입한 이메일이거나, 회원가입에 실패했습니다.</string>
+    <string name="check_email_password">로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.</string>
 
 </resources>
