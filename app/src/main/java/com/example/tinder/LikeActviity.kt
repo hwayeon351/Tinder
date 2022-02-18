@@ -150,8 +150,6 @@ class LikeActviity: AppCompatActivity(), CardStackListener {
         user[USER_ID] = userId
         user[NAME] = name
         currentUserDB.updateChildren(user)
-
-        //todo 유저 정보 가져오기
     }
 
 
