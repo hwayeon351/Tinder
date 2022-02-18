@@ -2,15 +2,13 @@ package com.example.tinder
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
@@ -26,9 +24,15 @@ class LikeActviity: AppCompatActivity(), CardStackListener {
     private val adapter = CardItemAdapter()
     private val cardItems = mutableListOf<CardItem>()
 
+    private val cardStackLayoutManager by lazy {
+        CardStackLayoutManager(this, this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_like)
+
+        initCardStackView()
 
         userDB = Firebase.database.reference.child("Users")
 
@@ -40,6 +44,7 @@ class LikeActviity: AppCompatActivity(), CardStackListener {
                     return
                 }
 
+                getUnSelectedUsers()
 
             }
 
@@ -49,13 +54,48 @@ class LikeActviity: AppCompatActivity(), CardStackListener {
 
         })
 
-        initCardStackView()
     }
 
     private fun initCardStackView() {
         val stackView = findViewById<CardStackView>(R.id.cardStackView)
-        stackView.layoutManager = CardStackLayoutManager(this, this)
+        stackView.layoutManager = cardStackLayoutManager
         stackView.adapter = adapter
+    }
+
+    private fun getUnSelectedUsers() {
+        userDB.addChildEventListener(object: ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                if (snapshot.child("userId").value != getCurrentUserId()
+                    && snapshot.child("likedBy").child("like").hasChild(getCurrentUserId()).not()
+                    && snapshot.child("likedBy").child("dislike").hasChild(getCurrentUserId()).not()) {
+
+                    val userId = snapshot.child("userId").value.toString()
+                    var name = "undecided"
+                    if(snapshot.child("name").value != null) {
+                        name = snapshot.child("name").value.toString()
+                    }
+
+                    cardItems.add(CardItem(userId, name))
+                    adapter.submitList(cardItems)
+                    adapter.notifyDataSetChanged()
+                }
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                cardItems.find { it.userId == snapshot.key }?.let {
+                    it.name = snapshot.child("name").value.toString()
+                }
+                adapter.submitList(cardItems)
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+
+            override fun onCancelled(error: DatabaseError) {}
+
+        })
     }
 
     private fun showNameInputPopup() {
@@ -84,7 +124,9 @@ class LikeActviity: AppCompatActivity(), CardStackListener {
         user["name"] = name
         currentUserDB.updateChildren(user)
 
+        //todo 유저 정보 가져오기
     }
+
 
     private fun getCurrentUserId(): String {
         if (auth.currentUser?.uid == null) {
@@ -95,10 +137,44 @@ class LikeActviity: AppCompatActivity(), CardStackListener {
         return auth.currentUser?.uid.orEmpty()
     }
 
+    private fun like() {
+        val card = cardItems[cardStackLayoutManager.topPosition - 1]
+        cardItems.removeFirst()
+
+        userDB.child(card.userId)
+            .child("likedBy")
+            .child("like")
+            .child(getCurrentUserId())
+            .setValue(true)
+
+        //todo 매칭이 된 시점을 본다
+
+        Toast.makeText(this, "${card.name}님을 Like 하셨습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun dislike() {
+        val card = cardItems[cardStackLayoutManager.topPosition - 1]
+        cardItems.removeFirst()
+
+        userDB.child(card.userId)
+            .child("likeBy")
+            .child("dislike")
+            .child(getCurrentUserId())
+            .setValue(true)
+
+        Toast.makeText(this, "${card.name}님을 Dislike 하셨습니다.", Toast.LENGTH_SHORT).show()
+    }
+
     override fun onCardDragging(direction: Direction?, ratio: Float) {}
 
     override fun onCardSwiped(direction: Direction?) {
-        TODO("Not yet implemented")
+        when (direction) {
+            Direction.Right -> like()
+            Direction.Left -> dislike()
+            else -> {
+
+            }
+        }
     }
 
     override fun onCardRewound() {}

@@ -1,5 +1,6 @@
 package com.example.tinder
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,7 @@ class CardItemAdapter: androidx.recyclerview.widget.ListAdapter<CardItem, CardIt
 
     inner class ViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
         fun bind(cardItem: CardItem) {
-            view.findViewById<TextView>(R.id.nameTextView)
+            view.findViewById<TextView>(R.id.nameTextView).text = cardItem.name
         }
     }
 
@@ -28,11 +29,11 @@ class CardItemAdapter: androidx.recyclerview.widget.ListAdapter<CardItem, CardIt
     companion object {
         val diffUtil = object: DiffUtil.ItemCallback<CardItem>() {
             override fun areItemsTheSame(oldItem: CardItem, newItem: CardItem): Boolean {
-                return oldItem.userId == newItem.userId
+                return oldItem == newItem
             }
 
             override fun areContentsTheSame(oldItem: CardItem, newItem: CardItem): Boolean {
-                return oldItem == newItem
+                return oldItem.userId == newItem.userId
             }
 
         }
