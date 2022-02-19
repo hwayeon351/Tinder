@@ -25,7 +25,7 @@ import com.yuyakaido.android.cardstackview.CardStackListener
 import com.yuyakaido.android.cardstackview.CardStackView
 import com.yuyakaido.android.cardstackview.Direction
 
-class LikeActviity: AppCompatActivity(), CardStackListener {
+class LikeActivity: AppCompatActivity(), CardStackListener {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var userDB: DatabaseReference
@@ -59,9 +59,7 @@ class LikeActviity: AppCompatActivity(), CardStackListener {
 
             }
 
-            override fun onCancelled(error: DatabaseError) {
-
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
         })
 
@@ -74,8 +72,8 @@ class LikeActviity: AppCompatActivity(), CardStackListener {
     }
 
     private fun initSignOutButton() {
-        val signOutBUtton = findViewById<Button>(R.id.signOutButton)
-        signOutBUtton.setOnClickListener {
+        val signOutButton = findViewById<Button>(R.id.signOutButton)
+        signOutButton.setOnClickListener {
             auth.signOut()
             startActivity(Intent(this, MainActivity::class.java))
             finish()
@@ -221,9 +219,6 @@ class LikeActviity: AppCompatActivity(), CardStackListener {
         when (direction) {
             Direction.Right -> like()
             Direction.Left -> dislike()
-            else -> {
-
-            }
         }
     }
 

@@ -153,8 +153,4 @@ class LoginActivity: AppCompatActivity() {
 
         finish()
     }
-
-    companion object {
-
-    }
 }

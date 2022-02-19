@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".LikeActviity"/>
+        <activity android:name=".LikeActivity"/>
         <activity android:name=".MatchedUserActivity"/>
 
     </application>
